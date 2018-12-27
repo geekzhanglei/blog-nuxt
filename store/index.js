@@ -1,18 +1,28 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
+import imgDefault from '@/assets/img/avatar.png';
+import global from '@/assets/js/global';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const store = () => new Vuex.Store({
-
   state: {
-    counter: 0
+    nickname: '管理员',
+    headimg: imgDefault
   },
+  getters: {},
   mutations: {
-    increment(state) {
-      state.counter++
+    setInfo(state, payload) {
+      state.nickname = payload.nickname;
+      state.headimg = `${global.apiDomain}${payload.headimg}`;
+    },
+    setNickname(state, payload) {
+      state.nickname = payload;
+    },
+    setHeadimg(state, payload) {
+      state.headimg = payload;
     }
-  }
-})
-
-export default store
+  },
+  actions: {}
+});
+export default store;

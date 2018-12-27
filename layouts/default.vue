@@ -1,55 +1,37 @@
 <template>
-  <div>
-    <nuxt/>
-  </div>
+    <div id="app">
+        <Header></Header>
+        <nuxt/>
+        <Footer></Footer>
+        <Canvas></Canvas>
+    </div>
 </template>
+<script>
+import Header from "./components/header";
+import Footer from "./components/footer";
+import Canvas from "../components/common/canvas";
 
-<style>
-html {
-  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  word-spacing: 1px;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  box-sizing: border-box;
-}
+export default {
+    components: {
+        Header,
+        Footer,
+        Canvas
+    },
+    mounted() {
+        console.log(
+            "这渣代码是我写的\r\n 你居然还要扒开了看\r\n我表示略尴尬\r\n 非要看源码的话：\r\n\r\n\r\n%cfollow me %c https://github.com/geekzhanglei/blog",
+            "color:red",
+            "color:green"
+        );
+        document.addEventListener("visibilitychange", function() {
+            if (document.visibilityState == "hidden") {
+                document.title = "这里有bug，快看！";
+            } else {
+                document.title = "欢迎回到博客";
+            }
+        });
+    }
+};
+</script>
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-  margin: 0;
-}
 
-.button--green {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
-  text-decoration: none;
-  padding: 10px 30px;
-}
-
-.button--green:hover {
-  color: #fff;
-  background-color: #3b8070;
-}
-
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
-  color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
-}
-
-.button--grey:hover {
-  color: #fff;
-  background-color: #35495e;
-}
-</style>
