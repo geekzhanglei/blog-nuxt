@@ -162,6 +162,15 @@ export default {
         };
     },
     methods: {
+        head: {
+            link: [
+                {
+                    rel: "stylesheet",
+                    href:
+                        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"
+                }
+            ]
+        },
         // 请求文章数据接口
         reqArticleDataApi: function(id) {
             getArticle(id).then(res => {
