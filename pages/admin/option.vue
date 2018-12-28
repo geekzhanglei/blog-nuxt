@@ -91,7 +91,6 @@ import {
     setDefaultArticlePages,
     setDefaultCommentInfos
 } from "@/assets/js/apis";
-import { Message } from "element-ui";
 
 export default {
     data: function() {

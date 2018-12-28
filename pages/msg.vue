@@ -184,7 +184,39 @@ import formatTime from "@/assets/js/utils";
 import Vue from "vue";
 
 export default {
-    data: function() {
+    async asyncData({ params }) {
+        let data = await getMsgList({
+            curpage: 1
+        }).then(res => {
+            return res.result;
+        });
+        if (!data.status) {
+            return {
+                showMsgCont: false,
+                showPages: false
+            };
+        }
+        if (data.isPagination) {
+            return {
+                list: data.data,
+                pagingData: {
+                    total: data.rows,
+                    curPage: 1
+                },
+                showPages: data.isPagination,
+                showMsgCont: true,
+                // 默认评论名、默认回复名
+                phcont: data.defaultCommentName,
+                phReplyCont: data.defaultReplyName
+            };
+        } else {
+            return {
+                showMsgCont: false,
+                showPages: false
+            };
+        }
+    },
+    data() {
         return {
             //输入内容与名字
             inputMsg: "",
@@ -430,10 +462,6 @@ export default {
                 id,
                 rId,
                 listLen = this.list.length;
-            var page_total,
-                page = _this.pagingData.curPage;
-            var _temp = parseInt(_this.pagingData.total) / this.pagesize;
-            page_total = Math.ceil(_temp);
 
             // 初始化每个评论下会用到的私有属性
             for (i = 0; i < listLen; i++) {
@@ -478,7 +506,7 @@ export default {
         }
     },
     mounted: function() {
-        this.reqMsgData(this.pagingData.page);
+        // this.reqMsgData(this.pagingData.page);
     }
 };
 </script>

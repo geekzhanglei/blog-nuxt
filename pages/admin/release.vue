@@ -15,15 +15,12 @@
     </div>
 </template>
 <script>
-import Vue from "vue";
-import mavonEditor from "mavon-editor";
-import "mavon-editor/dist/css/index.css";
 import { releaseArt, markdownImgUpload } from "@/assets/js/apis";
 import { Message } from "element-ui";
 
-Vue.use(mavonEditor);
 export default {
-    data: function() {
+    plugins: ["~plugins/mavon-editor.js"],
+    data() {
         return {
             title: "",
             digest: "",

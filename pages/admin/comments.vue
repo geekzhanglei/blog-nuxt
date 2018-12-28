@@ -112,7 +112,6 @@
 import { deleteComms, getArticleListWithMark } from "@/assets/js/apis";
 import formatTime from "@/assets/js/utils";
 import msgAndCommentsMixin from "@/assets/js/mixin";
-import { Message } from "element-ui";
 
 export default {
     mixins: [msgAndCommentsMixin],

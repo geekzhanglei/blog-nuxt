@@ -90,7 +90,6 @@
 <script>
 import { loginOut, modifyPsw, modifyAdministerInfo } from "@/assets/js/apis";
 import { mapState } from "vuex";
-import { Message } from "element-ui";
 const Base64 = require("js-base64").Base64;
 
 export default {

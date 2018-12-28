@@ -82,7 +82,6 @@
 <script>
 import { getAdminInfo, loginOut } from "@/assets/js/apis";
 import { mapState } from "vuex";
-import { Message } from "element-ui";
 
 export default {
     layout: "admin",
