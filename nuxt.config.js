@@ -51,7 +51,10 @@ module.exports = {
    */
   plugins: [
     '@/plugins/element-ui',
-    '@/plugins/mavon-editor'
+    {
+      src: '@/plugins/mavon-editor',
+      ssr: false
+    }
   ],
 
   /*
@@ -84,16 +87,22 @@ module.exports = {
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
   },
-
   /*
    ** Build configuration
    */
   build: {
-    /*
-     ** You can extend webpack config here
-     */
-    extend(config, ctx) {
-
+    vendor: ['axios.js'],
+    babel: {
+      plugins: [
+        [
+          'component',
+          {
+            libraryName: 'element-ui',
+            styleLibraryName: 'theme-chalk'
+          }
+        ]
+      ]
+      // ...
     }
   }
 }

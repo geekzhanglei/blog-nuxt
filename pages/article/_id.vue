@@ -13,7 +13,7 @@
                 <div class="post-meta">
                     <p class="subhead">
                         <span>作者：{{username}}</span>&nbsp
-                        <span>最后编辑于 {{time}}</span>
+                        <span>最后编辑于 {{transferTime(time)}}</span>
                     </p>
                 </div>
             </div>
@@ -124,7 +124,7 @@
                                     type="primary"
                                     size="medium"
                                     round
-                                    @click="updateComments"
+                                    @click="releaseComment"
                                 >发表</el-button>
                                 <span class="hint">«- 点击按钮</span>
                             </div>
@@ -148,6 +148,32 @@ export default {
                     "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css"
             }
         ]
+    },
+    async asyncData({ params }) {
+        let res = await getArticle(params.id).then(res => {
+            if (res.result) {
+                if (res.result.status) {
+                    return { AsyncData: res.result };
+                } else {
+                    return { error: "接口请求返回错误" };
+                }
+            } else {
+                this.$router.replace({
+                    path: "/"
+                });
+            }
+        });
+        return {
+            title: res.AsyncData.data.title,
+            username: res.AsyncData.data.username,
+            intro: res.AsyncData.data.introduction,
+            cont: res.AsyncData.data.content,
+            comments: res.AsyncData.data.comments || [],
+            time: res.AsyncData.data.updated_at,
+            comment: {
+                id: res.AsyncData.data.id
+            }
+        };
     },
     data() {
         return {
@@ -188,15 +214,18 @@ export default {
             });
         },
         // 发表评论
-        updateComments() {
+        releaseComment() {
             // var _this = this;
             if (!this.verifyInput(this.comment)) {
-                console.log("输入合法性校验失败");
+                this.$message({
+                    message: "输入合法性校验失败",
+                    type: "error"
+                });
                 return;
             } else {
                 this.comment.errTip = "";
                 if (this.comment.website) {
-                    this.comment.website = "http://" + this.comment.website;
+                    this.comment.website = `http://${this.comment.website}`;
                 }
             }
             addMark({
@@ -349,15 +378,7 @@ export default {
         },
         init: function(_data) {
             var _this = this,
-                comLen = _data.comments.length,
                 bool;
-            this.comment.id = _data.id;
-            this.title = _data.title;
-            this.username = _data.username;
-            this.time = this.transferTime(_data.updated_at);
-            this.cont = _data.content;
-            this.intro = _data.introduction;
-            this.comments = _data.comments;
             if (this.comments[0]) {
                 this.comments.forEach(function(item) {
                     _this.$set(item, "isVisited", false);
@@ -384,8 +405,7 @@ export default {
         }
     },
     mounted: function() {
-        var article_id = this.$router.currentRoute.params.id;
-        this.reqArticleDataApi(article_id);
+        this.init();
     }
 };
 </script>
@@ -498,6 +518,7 @@ p.subhead span {
 }
 .comment .wrap li {
     border-bottom: 1px dashed #d3d3d3;
+    margin: 1rem 0;
 }
 .comment .wrap .content {
     margin: 20px 0;
@@ -507,7 +528,8 @@ p.subhead span {
     font-weight: 700;
 }
 .comment .wrap .foot {
-    float: right;
+    display: flex;
+    justify-content: flex-end;
     font-size: 90%;
 }
 .comment .wrap .foot .expression {

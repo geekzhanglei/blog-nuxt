@@ -81,7 +81,7 @@
 </template>
 <script>
 import { getAdminInfo, loginOut } from "@/assets/js/apis";
-import { mapState } from "vuex";
+// import { mapState } from "vuex";
 
 export default {
     layout: "admin",
@@ -92,10 +92,18 @@ export default {
             articleAdm: false
         };
     },
-    computed: mapState({
-        nickname: state => state.nickname,
-        imgsrc: state => state.headimg
-    }),
+    // computed: mapState({
+    //     nickname: state => state.nickname,
+    //     imgsrc: state => state.headimg
+    // }),
+    computed: {
+        nickname() {
+            return this.$store.state.nickname;
+        },
+        imgsrc() {
+            return this.$store.state.headimg;
+        }
+    },
     methods: {
         toggleAticleAdm: function() {
             this.articleAdm = !this.articleAdm;

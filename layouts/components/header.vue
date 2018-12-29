@@ -26,7 +26,7 @@
 export default {};
 </script>
 <style scoped>
-.el-menu-item {
+.el-menu--horizontal > .el-menu-item {
     float: right;
 }
 .el-menu-item:first-child {

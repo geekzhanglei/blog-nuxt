@@ -89,7 +89,7 @@
 </template>
 <script>
 import { loginOut, modifyPsw, modifyAdministerInfo } from "@/assets/js/apis";
-import { mapState } from "vuex";
+// import { mapState } from "vuex";
 const Base64 = require("js-base64").Base64;
 
 export default {
@@ -129,10 +129,16 @@ export default {
                 this.loginout();
             }
         },
-        ...mapState({
-            nickname: state => state.nickname,
-            imgsrc: state => state.headimg
-        })
+        nickname() {
+            return this.$store.state.nickname;
+        },
+        imgsrc() {
+            return this.$store.state.headimg;
+        }
+        // ...mapState({
+        //     nickname: state => state.nickname,
+        //     imgsrc: state => state.headimg
+        // })
     },
 
     methods: {
