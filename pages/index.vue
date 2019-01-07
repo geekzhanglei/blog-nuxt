@@ -2,6 +2,7 @@
     <div>
         <div class="list">
             <div class="container">
+                <!-- <div>{{res}}</div> -->
                 <div v-for="(item,index) in items" :key="index">
                     <div class="col-md-12">
                         <div class="articlelist">
@@ -42,6 +43,7 @@ export default {
         }).then(res => {
             return res.result;
         });
+
         if (data.isPagination) {
             return {
                 showPages: true,

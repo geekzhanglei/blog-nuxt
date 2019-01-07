@@ -1,7 +1,7 @@
 const pkg = require('./package')
 
 module.exports = {
-  mode: 'spa',
+  mode: 'universal',
 
   /*
    ** Headers of the page
@@ -91,7 +91,19 @@ module.exports = {
    ** Build configuration
    */
   build: {
-    vendor: ['axios.js'],
+    // extend(config, {
+    //   isDev,
+    //   isClient
+    // }) {
+    //   if (isDev && isClient) {
+    //     config.module.rules.push({
+    //       enforce: 'pre',
+    //       test: /\.(js|vue)$/,
+    //       loader: 'eslint-loader',
+    //       exclude: /(node_modules)/
+    //     })
+    //   }
+    // },
     babel: {
       plugins: [
         [

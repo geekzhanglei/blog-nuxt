@@ -47,7 +47,7 @@ axios.interceptors.request.use(
 // 响应拦截器用来异常处理
 axios.interceptors.response.use(
   response => {
-    return response.data;
+    return Qs.parse(response.data);
   },
   err => {
     if (err && err.response) {
