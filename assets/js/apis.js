@@ -63,6 +63,7 @@ axios.interceptors.response.use(
 
 /* api 列表 */
 let Prefix = process.env.NODE_ENV === 'production' ? 'https://blogapi.feroad.com' : '/api';
+// let Prefix = '/api';
 let ImgPrefix = process.env.NODE_ENV === 'production' ? 'https://api.feroad.com' : '/imgapi';
 
 // 获取某篇文章

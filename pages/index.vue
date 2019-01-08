@@ -43,7 +43,6 @@ export default {
         }).then(res => {
             return res.result;
         });
-
         if (data.isPagination) {
             return {
                 showPages: true,
@@ -95,6 +94,9 @@ export default {
         handleCurrentChange(val) {
             this.reqArticleDataApi(val);
         }
+    },
+    mounted() {
+        // this.reqArticleDataApi(1);
     }
 };
 </script>
