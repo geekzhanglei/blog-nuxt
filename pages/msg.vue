@@ -184,7 +184,7 @@ import formatTime from "@/assets/js/utils";
 import Vue from "vue";
 
 export default {
-    async asyncData({ params }) {
+    async asyncData({ error }) {
         let data = await getMsgList({
             curpage: 1
         }).then(res => {
@@ -212,7 +212,8 @@ export default {
         } else {
             return {
                 showMsgCont: false,
-                showPages: false
+                showPages: false,
+                list:data.data
             };
         }
     },
@@ -454,7 +455,7 @@ export default {
             }
         },
         // 初始化数据与分页组件
-        init: function() {
+        init() {
             var _this = this;
             var i,
                 j,
@@ -506,7 +507,8 @@ export default {
         }
     },
     mounted: function() {
-        // this.reqMsgData(this.pagingData.page);
+        // 这里的this.init是为了第一次加载asyncData数据渲染后能够初始化深层数据结构上的值
+        this.init();
     }
 };
 </script>

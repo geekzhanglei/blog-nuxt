@@ -37,7 +37,7 @@ import { getArticleList } from "@/assets/js/apis";
 import formatTime from "@/assets/js/utils";
 
 export default {
-    async asyncData({ params }) {
+    async asyncData({ error }) {
         let data = await getArticleList({
             curpage: 1
         }).then(res => {
