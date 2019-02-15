@@ -89,7 +89,6 @@
 </template>
 <script>
 import { loginOut, modifyPsw, modifyAdministerInfo } from "@/assets/js/apis";
-// import { mapState } from "vuex";
 const Base64 = require("js-base64").Base64;
 
 export default {
@@ -122,8 +121,6 @@ export default {
             }
         },
         countdownJump() {
-            console.log(typeof this.countdown);
-            console.log("测试");
             if (!this.countdown) {
                 this.countdown = 5;
                 this.loginout();
@@ -135,10 +132,6 @@ export default {
         imgsrc() {
             return this.$store.state.headimg;
         }
-        // ...mapState({
-        //     nickname: state => state.nickname,
-        //     imgsrc: state => state.headimg
-        // })
     },
 
     methods: {
@@ -171,7 +164,7 @@ export default {
                 formdata.append("nickname", this.$store.state.nickname);
                 formdata.append("token", window.localStorage.token);
                 formdata.append("headImg", this.file);
-                modifyAdministerInfo(formdata).then(res => {
+                this.$axios.$post(modifyAdministerInfo, formdata).then(res => {
                     console.log(res);
                 });
                 // 更新个人信息到页眉右上角
@@ -226,25 +219,27 @@ export default {
                     alert("新密码不能与旧密码相同");
                 }
                 // 发送原密码和新密码，原密码是否正确，不正确给提示
-                modifyPsw({
-                    token: window.localStorage.token,
-                    password: Base64.encode(this.oldPswd),
-                    newpassword: Base64.encode(this.newPswd)
-                }).then(res => {
-                    if (res.result.status == 2) {
-                        this.errTip.pswdErr = true;
-                    } else if (res.result.status == 1) {
-                        console.log(res.result.data);
-                        this.oldPswd = "";
-                        this.newPswd = "";
-                        this.confirmPswd = "";
-                        this.showModifyPwOK = true;
-                        this.countStart(this.countdown);
-                    } else {
-                        this.errTip.pswdErr = true;
-                        console.log(res.result.data);
-                    }
-                });
+                this.$axios
+                    .$post(modifyPsw, {
+                        token: window.localStorage.token,
+                        password: Base64.encode(this.oldPswd),
+                        newpassword: Base64.encode(this.newPswd)
+                    })
+                    .then(res => {
+                        if (res.result.status == 2) {
+                            this.errTip.pswdErr = true;
+                        } else if (res.result.status == 1) {
+                            console.log(res.result.data);
+                            this.oldPswd = "";
+                            this.newPswd = "";
+                            this.confirmPswd = "";
+                            this.showModifyPwOK = true;
+                            this.countStart(this.countdown);
+                        } else {
+                            this.errTip.pswdErr = true;
+                            console.log(res.result.data);
+                        }
+                    });
             }
         },
         countStart: function(n) {
@@ -253,14 +248,13 @@ export default {
             for (var i = 1; i <= n; i++) {
                 timeId = setTimeout(function() {
                     _this.countdown -= 1;
-                    console.log(_this.countdown);
                     if (_this.countdown == 0) {
                         _this.loginout();
                     }
                 }, 1000 * i);
             }
         },
-        loginout: function() {
+        loginout() {
             if (!window.localStorage.token) {
                 this.$message({
                     message: "游客无权操作，请登录后重试",
@@ -269,14 +263,18 @@ export default {
                 return;
             }
             // 通知后台注销
-            loginOut({ token: window.localStorage.token }).then(res => {
-                if (res.stat) {
-                    window.localStorage.clear();
-                    this.$router.replace({
-                        path: "/login"
-                    });
-                }
-            });
+            this.$axios
+                .$get(loginOut, {
+                    params: { token: window.localStorage.token }
+                })
+                .then(res => {
+                    if (res.stat) {
+                        window.localStorage.clear();
+                        this.$router.replace({
+                            path: "/login"
+                        });
+                    }
+                });
         }
     },
     mounted: function() {

@@ -141,34 +141,42 @@ export default {
             };
         },
         handleDelete: function() {
-            deleteComms(this.deleteCont.row.id, {
-                token: window.localStorage.token
-            }).then(res => {
-                this.deleteCont.row.status = 2;
-                if (res.result.status) {
-                    console.log("删除成功");
-                } else {
-                    console.log("该条目已删除，不可重复删除");
-                }
-                this.dialogVisible = false;
-            });
+            this.$axios
+                .$get(deleteComms + this.deleteCont.row.id, {
+                    params: {
+                        token: window.localStorage.token
+                    }
+                })
+                .then(res => {
+                    this.deleteCont.row.status = 2;
+                    if (res.result.status) {
+                        console.log("删除成功");
+                    } else {
+                        console.log("删除出错");
+                    }
+                    this.dialogVisible = false;
+                });
         },
-        requestArticle: function(e = 1) {
-            getArticleListWithMark({
-                curpage: e,
-                perpage: this.perPage,
-                token: window.localStorage.token
-            }).then(res => {
-                if (res.result.status) {
-                    this.tableData = res.result.data;
-                    // 转换数据中所有unix时间戳
-                    this.transferTime(this.tableData);
-                    // 分页初始化
-                    this.initPage(res.result);
-                } else {
-                    console.log("请求接口错误");
-                }
-            });
+        requestArticle(e = 1) {
+            this.$axios
+                .$get(getArticleListWithMark, {
+                    params: {
+                        curpage: e,
+                        perpage: this.perPage,
+                        token: window.localStorage.token
+                    }
+                })
+                .then(res => {
+                    if (res.result.status) {
+                        this.tableData = res.result.data;
+                        // 转换数据中所有unix时间戳
+                        this.transferTime(this.tableData);
+                        // 分页初始化
+                        this.initPage(res.result);
+                    } else {
+                        console.log("请求接口错误");
+                    }
+                });
         },
         transferTime: function(obj) {
             for (var i = 0; i < obj.length; i++) {
@@ -194,10 +202,10 @@ export default {
             }
         },
         changePageNum: function(e) {
-            this.perPage = Number(e);
-            if (!this.perPage) {
+            if (!this.isValid(e)) {
                 return;
             }
+            this.perPage = Number(e);
             this.debounce(this.requestArticle);
         },
         traversalObj: function(curValue, inValue) {
@@ -248,7 +256,7 @@ export default {
         initPage: function(data) {
             // 分页组件赋值
             this.total = Number(data.rows);
-            this.perPage = 5; // 神仙数字，接口未提供
+            this.perPage = data.perpage ? Number(data.perpage) : this.perPage; // 神仙数字，接口未提供
         }
     },
     mounted: function() {

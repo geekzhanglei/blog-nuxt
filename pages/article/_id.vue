@@ -149,29 +149,19 @@ export default {
             }
         ]
     },
-    async asyncData({ params }) {
-        let res = await getArticle(params.id).then(res => {
-            if (res.result) {
-                if (res.result.status) {
-                    return { AsyncData: res.result };
-                } else {
-                    return { error: "接口请求返回错误" };
-                }
-            } else {
-                this.$router.replace({
-                    path: "/"
-                });
-            }
-        });
+    async asyncData({ app, params }) {
+        let res = await app.$axios
+            .$get(getArticle + params.id)
+            .then(res => res.result);
         return {
-            title: res.AsyncData.data.title,
-            username: res.AsyncData.data.username,
-            intro: res.AsyncData.data.introduction,
-            cont: res.AsyncData.data.content,
-            comments: res.AsyncData.data.comments || [],
-            time: res.AsyncData.data.updated_at,
+            title: res.data.title,
+            username: res.data.username,
+            intro: res.data.introduction,
+            cont: res.data.content,
+            comments: res.data.comments || [],
+            time: res.data.updated_at,
             comment: {
-                id: res.AsyncData.data.id
+                id: res.data.id
             }
         };
     },
@@ -228,32 +218,35 @@ export default {
                     this.comment.website = `http://${this.comment.website}`;
                 }
             }
-            addMark({
-                articleId: this.comment.id,
-                nickname: this.comment.nickname,
-                email: this.comment.email,
-                website: this.comment.website,
-                content: this.comment.content
-            }).then(res => {
-                var flag = res.result.status;
-                var _data = res.result.data;
-                if (flag) {
-                    var _obj = {
-                        id: this.comment.id,
-                        nickname: this.comment.nickname,
-                        website: this.comment.website,
-                        content: this.comment.content,
-                        create_time: Date.parse(new Date()) / 1000
-                    };
-                    this.comments.push(_obj);
-                    this.comment.email = "";
-                    this.comment.nickname = "";
-                    this.comment.website = "";
-                    this.comment.content = "";
-                } else {
-                    console.log("后台返回提示：" + _data);
-                }
-            });
+            this.$axios
+                .$post(addMark, {
+                    articleId: this.comment.id,
+                    nickname: this.comment.nickname,
+                    email: this.comment.email,
+                    website: this.comment.website,
+                    content: this.comment.content
+                })
+                .then(res => {
+                    console.log(res);
+                    var flag = res.result.status;
+                    var _data = res.result.data;
+                    if (flag) {
+                        var _obj = {
+                            id: this.comment.id,
+                            nickname: this.comment.nickname,
+                            website: this.comment.website,
+                            content: this.comment.content,
+                            create_time: Date.parse(new Date()) / 1000
+                        };
+                        this.comments.push(_obj);
+                        this.comment.email = "";
+                        this.comment.nickname = "";
+                        this.comment.website = "";
+                        this.comment.content = "";
+                    } else {
+                        console.log("后台返回提示：" + _data);
+                    }
+                });
         },
         // 用户输入校验
         verifyInput: function(cet) {
@@ -368,9 +361,11 @@ export default {
             // 请求接口category1点赞，2取消
             if (this.clickFlag) {
                 this.clickFlag = 0;
-                addSupport(item.id, { category }).then(res => {
-                    console.log(res);
-                });
+                this.$axios
+                    .$post(addSupport + item.id, { category })
+                    .then(res => {
+                        console.log(res);
+                    });
                 setTimeout(function() {
                     _this.clickFlag = 1;
                 }, 1000);

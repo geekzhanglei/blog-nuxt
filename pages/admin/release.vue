@@ -11,7 +11,9 @@
         <el-row>
             <el-input type="textarea" :rows="3" v-model="digest" placeholder="请输入摘要(必填)"></el-input>
         </el-row>
-        <mavon-editor isHljs="true" @imgAdd="$imgAdd" ref="md" @save="saveArticle"></mavon-editor>
+        <no-ssr>
+            <mavon-editor isHljs="true" @imgAdd="$imgAdd" ref="md" @save="saveArticle"></mavon-editor>
+        </no-ssr>
     </div>
 </template>
 <script>
@@ -76,34 +78,36 @@ export default {
                 return;
             }
             // 上传文章
-            releaseArt({
-                token: window.localStorage.token,
-                username: this.$store.state.nickname,
-                title: this.title,
-                introduction: this.digest,
-                content: render
-            }).then(res => {
-                if (res.result.status) {
-                    // 清空输入
-                    this.title = "";
-                    this.digest = "";
-                } else {
-                    if (res.result.data === "没有token值") {
-                        this.$message({
-                            message: "游客无权操作，请登录后重试",
-                            type: "error"
-                        });
-                        return;
+            this.$axios
+                .$post(releaseArt, {
+                    token: window.localStorage.token,
+                    username: this.$store.state.nickname,
+                    title: this.title,
+                    introduction: this.digest,
+                    content: render
+                })
+                .then(res => {
+                    if (res.result.status) {
+                        // 清空输入
+                        this.title = "";
+                        this.digest = "";
+                    } else {
+                        if (res.result.data === "没有token值") {
+                            this.$message({
+                                message: "游客无权操作，请登录后重试",
+                                type: "error"
+                            });
+                            return;
+                        }
                     }
-                }
-            });
+                });
         },
         // markdown上传图片功能
         $imgAdd(pos, $file) {
             // 第一步.将图片上传到服务器.
             var formdata = new FormData();
             formdata.append("file", $file);
-            markdownImgUpload(formdata).then(res => {
+            this.$axios.$post(markdownImgUpload, formdata).then(res => {
                 let url = res.imgUrl;
                 // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
                 /**

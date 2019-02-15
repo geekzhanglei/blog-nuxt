@@ -136,21 +136,25 @@ export default {
         },
         modifyArtInfo: function() {
             // 更新文章接口数据
-            setDefaultArticlePages({
-                token: window.localStorage.token,
-                type: this.selectedArtPage ? 1 : 2,
-                curpage: 1,
-                perpage: this.artPageSize
-            }).then(res => {
-                if (res.result.status) {
-                    console.log("文章列表设置成功，返回：" + res.result.data);
-                    this.saveConErr = false;
-                    this.saveConOK = true;
-                } else {
-                    this.saveConOK = false;
-                    this.saveConErr = true;
-                }
-            });
+            this.$axios
+                .$post(setDefaultArticlePages, {
+                    token: window.localStorage.token,
+                    type: this.selectedArtPage ? 1 : 2,
+                    curpage: 1,
+                    perpage: this.artPageSize
+                })
+                .then(res => {
+                    if (res.result.status) {
+                        console.log(
+                            "文章列表设置成功，返回：" + res.result.data
+                        );
+                        this.saveConErr = false;
+                        this.saveConOK = true;
+                    } else {
+                        this.saveConOK = false;
+                        this.saveConErr = true;
+                    }
+                });
         },
         modifyMsgInfo: function() {
             if (!this.replyNickname) {
@@ -160,22 +164,26 @@ export default {
                 this.msgNickname = "荀彧";
             }
             // 更新留言板接口数据
-            setDefaultCommentInfos({
-                token: window.localStorage.token,
-                type: this.selectedMsgPage ? 1 : 2,
-                perpage: this.msgPageSize,
-                defaultCommentName: this.msgNickname,
-                defaultReplyName: this.replyNickname
-            }).then(res => {
-                if (res.result.status) {
-                    console.log("留言板内容设置成功，返回：" + res.result.data);
-                    this.saveConOK = true;
-                    this.saveConErr = false;
-                } else {
-                    this.saveConOK = false;
-                    this.saveConErr = true;
-                }
-            });
+            this.$axios
+                .$post(setDefaultCommentInfos, {
+                    token: window.localStorage.token,
+                    type: this.selectedMsgPage ? 1 : 2,
+                    perpage: this.msgPageSize,
+                    defaultCommentName: this.msgNickname,
+                    defaultReplyName: this.replyNickname
+                })
+                .then(res => {
+                    if (res.result.status) {
+                        console.log(
+                            "留言板内容设置成功，返回：" + res.result.data
+                        );
+                        this.saveConOK = true;
+                        this.saveConErr = false;
+                    } else {
+                        this.saveConOK = false;
+                        this.saveConErr = true;
+                    }
+                });
         }
     },
     created: function() {

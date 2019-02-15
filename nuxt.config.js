@@ -2,7 +2,7 @@ const pkg = require('./package')
 
 module.exports = {
   mode: 'universal',
-
+  sourceMap: true,
   /*
    ** Headers of the page
    */
@@ -54,17 +54,19 @@ module.exports = {
     {
       src: '@/plugins/mavon-editor',
       ssr: false
-    }
+    },
+    '~/plugins/axios'
   ],
 
   /*
    ** Nuxt.js modules
    */
   modules: [
-    // Doc: https://github.com/nuxt-community/axios-module#usage
     '@nuxtjs/axios',
-    '@nuxtjs/proxy'
   ],
+  axios: {
+    proxy: true // See https://github.com/nuxt-community/axios-module#options
+  },
   proxy: {
     '/api/': {
       target: 'https://blogapi.feroad.com',
@@ -82,28 +84,17 @@ module.exports = {
     },
   },
   /*
-   ** Axios module configuration
-   */
-  axios: {
-    // See https://github.com/nuxt-community/axios-module#options
-  },
-  /*
    ** Build configuration
    */
   build: {
-    // extend(config, {
-    //   isDev,
-    //   isClient
-    // }) {
-    //   if (isDev && isClient) {
-    //     config.module.rules.push({
-    //       enforce: 'pre',
-    //       test: /\.(js|vue)$/,
-    //       loader: 'eslint-loader',
-    //       exclude: /(node_modules)/
-    //     })
-    //   }
-    // },
+    extend(config, {
+      isClient
+    }) {
+      // 为 客户端打包 进行扩展配置
+      if (isClient) {
+        config.devtool = 'eval-source-map'
+      }
+    },
     babel: {
       plugins: [
         [

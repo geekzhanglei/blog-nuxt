@@ -23,7 +23,7 @@
     </div>
 </template>
 <script>
-import { adminLogin, isLogin } from "@/assets/js/apis";
+import { adminLogin } from "@/assets/js/apis";
 
 export default {
     layout: "admin",
@@ -40,24 +40,25 @@ export default {
             var _this = this;
             if (this.loginname && this.loginpwd) {
                 this.isErr = false;
-
-                adminLogin({
-                    username: _this.loginname,
-                    password: _this.loginpwd
-                }).then(res => {
-                    if (res.stat) {
-                        var storage = window.localStorage;
-                        storage.setItem("token", res.token);
-                        _this.loginname = "";
-                        _this.loginpwd = "";
-                        _this.$router.replace({
-                            name: "admin"
-                        });
-                    } else {
-                        _this.isErr = true;
-                        _this.tips = "账号或密码错误";
-                    }
-                });
+                this.$axios
+                    .$post(adminLogin, {
+                        username: _this.loginname,
+                        password: _this.loginpwd
+                    })
+                    .then(res => {
+                        if (res.stat) {
+                            var storage = window.localStorage;
+                            storage.setItem("token", res.token);
+                            _this.loginname = "";
+                            _this.loginpwd = "";
+                            _this.$router.replace({
+                                name: "admin"
+                            });
+                        } else {
+                            _this.isErr = true;
+                            _this.tips = "账号或密码错误";
+                        }
+                    });
             } else {
                 // 错误信息提示
                 this.isErr = true;
@@ -70,28 +71,7 @@ export default {
             this.$router.replace({
                 name: "admin"
             });
-        },
-        init: function() {
-            var _this = this;
-            //判断是否登陆,请求后端验证token
-            if (window.localStorage.token) {
-                isLogin({ token: window.localStorage.token }).then(res => {
-                    if (res.stat) {
-                        console.log(res.data);
-                        _this.loginname = "";
-                        _this.loginpwd = "";
-                        this.$router.replace({
-                            name: "admin"
-                        });
-                    } else {
-                        console.log("重新登陆");
-                    }
-                });
-            }
         }
-    },
-    mounted: function() {
-        this.init();
     }
 };
 </script>

@@ -126,28 +126,31 @@ export default {
         },
         // 改变默认table显示行数
         changePageNum(e) {
-            if (this.isValid(e)) {
-                this.perPage = Number(e);
-                this.debounce(this.reqMsgData);
-            } else {
+            if (!this.isValid(e)) {
                 return;
             }
+            this.perPage = Number(e);
+            this.debounce(this.reqMsgData);
         },
         // 请求留言数据接口
         reqMsgData: function(e = 1) {
-            getAdminMsgList({
-                curpage: e,
-                perpage: this.perPage
-            }).then(res => {
-                var flag = res.result.status;
-                if (flag) {
-                    this.tableData = this.handleData(res.result.data);
-                    // 分页初始化
-                    this.initPage(res.result);
-                } else {
-                    this.tableData = [];
-                }
-            });
+            this.$axios
+                .$get(getAdminMsgList, {
+                    params: {
+                        curpage: e,
+                        perpage: this.perPage
+                    }
+                })
+                .then(res => {
+                    var flag = res.result.status;
+                    if (flag) {
+                        this.tableData = this.handleData(res.result.data);
+                        // 分页初始化
+                        this.initPage(res.result);
+                    } else {
+                        this.tableData = [];
+                    }
+                });
         },
         handleData(arr) {
             arr.forEach(item => {
@@ -175,8 +178,10 @@ export default {
         handleDelete() {
             this.tableData.splice(this.deleteCont.index, 1);
             // 再请求删除留言接口
-            deleteMsg(this.deleteCont.row.id, {
-                token: window.localStorage.token
+            this.$axios.$get(deleteMsg + this.deleteCont.row.id, {
+                params: {
+                    token: window.localStorage.token
+                }
             });
             this.dialogVisible = false;
         },

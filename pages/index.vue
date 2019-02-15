@@ -2,7 +2,6 @@
     <div>
         <div class="list">
             <div class="container">
-                <!-- <div>{{res}}</div> -->
                 <div v-for="(item,index) in items" :key="index">
                     <div class="col-md-12">
                         <div class="articlelist">
@@ -12,7 +11,7 @@
                                     class="article-l"
                                 >{{item.title}}</nuxt-link>
                             </h4>
-                            <p v-html="item.introduction"></p>
+                            <div class="intro" v-html="item.introduction"></div>
                             <p class="time">{{transferTime(item.createTime)}}</p>
                         </div>
                     </div>
@@ -37,12 +36,10 @@ import { getArticleList } from "@/assets/js/apis";
 import formatTime from "@/assets/js/utils";
 
 export default {
-    async asyncData({ error }) {
-        let data = await getArticleList({
-            curpage: 1
-        }).then(res => {
-            return res.result;
-        });
+    async asyncData({ app }) {
+        let data = await app.$axios
+            .$get(`${getArticleList}?curpage=1`)
+            .then(res => res.result);
         if (data.isPagination) {
             return {
                 showPages: true,
@@ -55,36 +52,26 @@ export default {
             return { showPages: false, items: data.data };
         }
     },
-    data() {
-        return {
-            items: [],
-            showPages: true,
-            // 分页参数
-            total: 0,
-            curPage: 1,
-            perPage: 1
-        };
-    },
     methods: {
         // 请求文章数据接口
         reqArticleDataApi: function(e) {
-            getArticleList({
-                curpage: e
-            }).then(res => {
-                if (res.result && res.result.status) {
-                    this.items = res.result.data;
-                    if (res.result.isPagination) {
-                        this.showPages = true;
-                        this.curPage = e;
-                        this.perPage = Number(res.result.perpage);
-                        this.total = res.result.rows;
+            this.$axios
+                .$get(getArticleList, { params: { curpage: e } })
+                .then(res => {
+                    if (res.result && res.result.status) {
+                        this.items = res.result.data;
+                        if (res.result.isPagination) {
+                            this.showPages = true;
+                            this.curPage = e;
+                            this.perPage = Number(res.result.perpage);
+                            this.total = res.result.rows;
+                        } else {
+                            this.showPages = false;
+                        }
                     } else {
                         this.showPages = false;
                     }
-                } else {
-                    this.showPages = false;
-                }
-            });
+                });
         },
         // 时间戳转换
         transferTime: function(unixTime) {
@@ -94,9 +81,6 @@ export default {
         handleCurrentChange(val) {
             this.reqArticleDataApi(val);
         }
-    },
-    mounted() {
-        // this.reqArticleDataApi(1);
     }
 };
 </script>
@@ -140,7 +124,10 @@ export default {
     word-wrap: break-word;
     font-size: 16px;
 }
-
+.intro {
+    color: #817c7c;
+    padding: 5px 20px 0px 20px;
+}
 .articlelist p.time {
     margin-right: 50px;
     height: auto;

@@ -7,8 +7,8 @@
             text-color="#fff"
             active-text-color="#ffd04b"
         >
-            <el-menu-item index="login">
-                <nuxt-link tag="a" :to="{name:'login'}">管理后台</nuxt-link>
+            <el-menu-item index="admin">
+                <nuxt-link tag="a" :to="{name:'admin'}">管理后台</nuxt-link>
             </el-menu-item>
             <el-menu-item index="me">
                 <nuxt-link tag="a" :to="{name:'about'}" class="h_msg ani-menulist" exact>关于博客</nuxt-link>

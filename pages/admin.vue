@@ -80,7 +80,7 @@
     </el-container>
 </template>
 <script>
-import { getAdminInfo, loginOut } from "@/assets/js/apis";
+import { isLogin, getAdminInfo, loginOut } from "@/assets/js/apis";
 // import { mapState } from "vuex";
 
 export default {
@@ -119,7 +119,7 @@ export default {
             }
         },
         getInfo: function() {
-            getAdminInfo({}).then(res => {
+            this.$axios.$get(getAdminInfo).then(res => {
                 var data = res.result.data;
                 if (res.result.status == 1) {
                     this.$store.commit({
@@ -130,7 +130,7 @@ export default {
                 }
             });
         },
-        loginout: function() {
+        loginout() {
             if (!window.localStorage.token) {
                 this.$message({
                     message: "游客无权操作，请登录后重试",
@@ -139,28 +139,50 @@ export default {
                 return;
             }
             // 通知后台注销
-            loginOut({ token: window.localStorage.token }).then(res => {
-                if (res.stat) {
-                    // 清除本地token
-                    window.localStorage.removeItem("token");
-                    this.$router.replace({
-                        path: "/login"
-                    });
-                }
-            });
+            this.$axios
+                .$get(loginOut, {
+                    params: { token: window.localStorage.token }
+                })
+                .then(res => {
+                    if (res.stat) {
+                        // 清除本地token
+                        window.localStorage.removeItem("token");
+                        this.$router.replace({
+                            path: "/login"
+                        });
+                    }
+                });
         },
-        init: function() {
-            this.getInfo();
+        init() {
+            //判断是否登陆,请求后端验证token
+            this.$axios
+                .$get(isLogin, {
+                    params: { token: window.localStorage.token }
+                })
+                .then(res => {
+                    console.log("测试进入");
+                    console.log(res);
+                    if (res.stat) {
+                        // 跳转到文章发布页
+                        if (this.$router.currentRoute.path === "/admin") {
+                            this.$router.push({
+                                path: "/admin/release"
+                            });
+                        }
+                        this.getInfo();
+                    } else {
+                        console.log(res);
+                        if (this.$router.currentRoute.path === "/admin") {
+                            this.$router.push({
+                                path: "/login"
+                            });
+                        }
+                    }
+                });
         }
     },
     mounted: function() {
         this.init();
-        // 跳转到文章发布页
-        if (this.$router.currentRoute.path === "/admin") {
-            this.$router.push({
-                path: "/admin/release"
-            });
-        }
     }
 };
 </script>

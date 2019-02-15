@@ -46,19 +46,21 @@ export default {
     methods: {
         // 请求文章列表
         reqArticleList: function(curpage = 1) {
-            getArticleIntroList({
-                curpage: curpage,
-                perpage: this.perpage
-            }).then(res => {
-                var flag = res.result.status;
-                if (flag) {
-                    this.items = this.items.concat(res.result.data);
-                    if (this.curpage * this.perpage > res.result.rows) {
-                        this.endFetch = true;
-                        this.showLoadMore = false;
+            this.$axios
+                .$get(getArticleIntroList, {
+                    curpage: curpage,
+                    perpage: this.perpage
+                })
+                .then(res => {
+                    var flag = res.result.status;
+                    if (flag) {
+                        this.items = this.items.concat(res.result.data);
+                        if (this.curpage * this.perpage > res.result.rows) {
+                            this.endFetch = true;
+                            this.showLoadMore = false;
+                        }
                     }
-                }
-            });
+                });
         },
         // 时间戳转换
         transferTime: function(unixTime) {
@@ -81,19 +83,21 @@ export default {
                 return;
             }
 
-            deleteArticle(this.deleteId, {
-                token: window.localStorage.token
-            }).then(res => {
-                if (res.result.status) {
-                    this.dialogVisible = false;
-                    this.items = this.items.filter(element => {
-                        if (element.id === this.deleteId) {
-                            return false;
-                        }
-                        return true;
-                    });
-                }
-            });
+            this.$axios
+                .$post(deleteArticle + this.deleteId, {
+                    token: window.localStorage.token
+                })
+                .then(res => {
+                    if (res.result.status) {
+                        this.dialogVisible = false;
+                        this.items = this.items.filter(element => {
+                            if (element.id === this.deleteId) {
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                });
         },
         // 处理过长的文章简介
         handleIntro: function(inputHTML) {
