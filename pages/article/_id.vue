@@ -611,7 +611,6 @@ p.subhead span {
     text-overflow: ellipsis;
 }
 .article code {
-    white-space: normal;
     word-break: break-all;
 }
 @media screen and (max-width: 900px) {
