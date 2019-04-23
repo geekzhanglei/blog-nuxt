@@ -612,6 +612,7 @@ p.subhead span {
 }
 .article code {
     word-break: break-all;
+    white-space: pre-wrap;
 }
 @media screen and (max-width: 900px) {
     .article .post-abs,
